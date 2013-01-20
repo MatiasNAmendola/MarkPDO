@@ -42,5 +42,5 @@ Include MarkPDO.class.php on whatever page you need to use it on.
     				"twitter"=>"@misterdunphy"
     			  );
     $where = "id='1234'";
-    $dbh->insert($table, $table);
+    $dbh->update($table, $table, $where);
 ```
