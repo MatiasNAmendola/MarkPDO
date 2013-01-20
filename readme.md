@@ -44,3 +44,20 @@ Include MarkPDO.class.php on whatever page you need to use it on.
     $where = "id='1234'";
     $dbh->update($table, $table, $where);
 ```
+
+4. Delete
+```
+	// NOTE: This will create a where clause separated by AND meaning 
+	// that it will only delete rows that match ALL criteria in the
+	// $where array.  Adding a fancier delete method later to account
+	// for more flexibility.
+	//
+    // $Table is the table to delete from
+    // $where is a key/value array where the key is the column name.
+    // Returns boolean true/false on success/failure
+    $table = "users";
+    $where = array(
+    				"id"=>"1234"
+    			  );
+    $dbh->delete($table, $where);
+```
