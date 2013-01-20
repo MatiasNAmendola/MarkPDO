@@ -34,32 +34,29 @@ class MarkPDO {
 	/**************************************************************/
 	function insert($table, $data) {
 		$numParams = count($data);
-
-		// Separate keys from values
-		foreach($data as $key=>$val) {
-			$c[] = $key;
-			$v[] = $val;
-		}
-		array_unshift($v, "spacer");
-		$cols = implode(", ", $c);
+		$placeholder = "";
+		$iterator = 1;
 		
-		// Construct placeholder 
-		$placeholder = "(?";
-		for($i=1;$i<$numParams;$i++)
-			$placeholder .= ", ?";
-		$placeholder .= ")";
-		// End placeholder construction		
+		// Set placeholder
+		for($i=1;$i<=$numParams;$i++) {
+			if($i!=$numParams)
+				$placeholder .= "?, ";
+			else
+				$placeholder .= "?";
+		}
+			
+		// Get columns for query
+		$columns = implode(", ", array_keys($data));
 		
 		// Prepare
-		$sql = "INSERT INTO `$table` ($cols) VALUES $placeholder";
+		$sql = "INSERT INTO `$table` ($columns) VALUES ($placeholder)";
 		$sth = $this->dbh->prepare($sql);
 		
-		// Set sth
-		foreach($v as $key=>$val) {
-			if($key!=0)
-				$sth->bindValue($key, $val);
+		// Bind values
+		foreach($data as $value) {
+			$sth->bindValue($iterator, $value);
+			$iterator++;
 		}
-		
 		
 		
 		if($sth->execute())
@@ -73,27 +70,34 @@ class MarkPDO {
 	/* @param $table (String) [Required] - The table to update.
 	/* @param $data (Array) [Required] - The data to update.  Keys should be the name of the column
 								 with a corresponding value.
-	/* @param $where (String) [Required] - Specify where clause to determine which row to update.
+	/* @param $where (Array) [Required] - Specify where clause to determine which row to update.
+										  Key should be column name. Row must match ALL criteria in 
+										  this array.
 	/**************************************************************/
 	public function update($table, $data, $where) {
 		$save = array();
 		$v = array();
+		$iterator = 1;
 		
-		foreach($data as $key=>$val) {
-			$save[] = $key."=?";
-			$v[] = $val;
-		}
+		// Construct set
+		$updatethis = implode("=?, ", array_keys($data))."=?";
+
+		// Construct where clause
+		$whereholder = implode("=? AND ", array_keys($where))."=?";
 		
-		array_unshift($v, "spacer");
-
-		$updatethis = implode(", ", $save);
-
-		$sql = "UPDATE `$table` SET $updatethis WHERE $where";
+		// Prepare
+		$sql = "UPDATE `$table` SET $updatethis WHERE $whereholder";
 		$sth = $this->dbh->prepare($sql);
 		
-		foreach($v as $key=>$val) {
-			if($key!=0)
-				$sth->bindValue($key, $val);
+		// Bind update values
+		foreach($data as $val) {
+			$sth->bindValue($iterator, $val);
+			$iterator++;
+		}
+		// Bind where values
+		foreach($where as $val) {
+			$sth->bindValue($iterator, $val);
+			$iterator++;
 		}
 		
 		if($sth->execute())
@@ -110,27 +114,21 @@ class MarkPDO {
 										  this array.
 	/**************************************************************/
 	public function delete($table, $where) {
-		$w = array();
-		$v = array();
+		$iterator = 1;
+		// Placeholder set up
+		$placeholder = implode("=? AND ", array_keys($where))."=?";
 		
-		foreach($where as $key=>$val) {
-			$cols[] = $key;
-			$v[] = $val;
-		}
-
-		array_unshift($v, "spacer");
-		
-		$placeholder = implode("=? AND ", $cols);
-		$placeholder .= "=?";
-
+		// Prepare
 		$sql = "DELETE FROM `$table` WHERE $placeholder";
 		$sth = $this->dbh->prepare($sql);
 		
-		foreach($v as $key=>$val) {
-			if($key!=0)
-				$sth->bindValue($key, $val);
+		// Bind values
+		foreach($where as $val) {
+			$sth->bindValue($iterator, $val);
+			$iterator++;
 		}
-
+		
+		// Execute
 		if($sth->execute())
 			return true;
 		else
