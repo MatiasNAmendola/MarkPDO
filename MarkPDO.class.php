@@ -10,6 +10,7 @@
 class MarkPDO {
 	
 	private $dbh;
+	// Enter your database info here.  Or just instantiate the class with your info each time.
 	private $host = "localhost";
 	private $user = "root";
 	private $pass = "";
