@@ -10,11 +10,10 @@
 class MarkPDO {
 	
 	private $dbh;
-	// Enter your database info here.  Or just instantiate the class with your info each time.
 	private $host = "localhost";
 	private $user = "root";
 	private $pass = "";
-	private $dbname = "";
+	private $dbname = "fly_invoice";
 	
 	// Construct new db handler
 	function __construct($host=NULL, $dbname=NULL, $user=NULL, $pass=NULL) {
@@ -26,6 +25,8 @@ class MarkPDO {
 		}
 		
 		$this->dbh = new PDO("mysql:host=".$this->host.";dbname=".$this->dbname, $this->user, $this->pass);
+		
+		$this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	}
 	
 	/* Accepts an array $data of values to insert into table $table
@@ -132,6 +133,81 @@ class MarkPDO {
 		// Execute
 		if($sth->execute())
 			return true;
+		else
+			return false;
+		
+		
+	}
+	
+	/* Accepts arrays $select and $where to fetch from table $table.
+	/* @param $table (String) [Required] - The table to fetch from.
+	/* @param $select (Array) [Required] - An array where the values are the columns to be returned.
+	/* @param $where (Array) [Required] - Specify where clause to determine which row to delete.
+										  Key should be column name. Row must match ALL criteria in 
+										  this array.
+	/* @param @ORM (Boolean) [Optional] - Set to false to return an associative array. Set to true 
+										  by default to return an array of objects.
+	/**************************************************************/
+	public function fetchOne($table, $select, $where, $ORM=true) {
+		$iterator = 1;
+		
+		// Placeholder set up
+		$placeholder = implode("=? AND ", array_keys($where))."=?";
+		$select = implode(", ", $select);
+		
+		// Prepare
+		$sql = "SELECT $select FROM `$table` WHERE $placeholder LIMIT 1";
+
+		$sth = $this->dbh->prepare($sql);
+		
+		// Bind values
+		foreach($where as $val) {
+			$sth->bindValue($iterator, $val);
+			$iterator++;
+		}
+		
+		// Execute
+		if($sth->execute())
+			return $ORM ? $sth->fetch(PDO::FETCH_OBJ) : $sth->fetch(PDO::FETCH_ASSOC);
+		else
+			return false;
+		
+		
+	}
+	
+	/* Accepts arrays $select and $where to fetch from table $table.
+	/* @param $table (String) [Required] - The table to fetch from.
+	/* @param $select (Array) [Required] - An array where the values are the columns to be returned.
+	/* @param $where (Array) [Required] - Specify where clause to determine which row to delete.
+										  Key should be column name. Row must match ALL criteria in 
+										  this array.
+	/* @param @ORM (Boolean) [Optional] - Set to false to return an associative array. Set to true 
+										  by default to return an array of objects.
+	/**************************************************************/
+	public function fetchAll($table, $select, $where, $ORM=true) {
+		$iterator = 1;
+		
+		// Placeholder set up
+		$placeholder = implode("=? AND ", array_keys($where))."=?";
+		$select = implode(", ", $select);
+		
+		// Prepare
+		$sql = "SELECT $select FROM `$table` WHERE $placeholder";
+		
+		if(!is_null($limit))
+			$sql .= " LIMIT $limit";
+			
+		$sth = $this->dbh->prepare($sql);
+		
+		// Bind values
+		foreach($where as $val) {
+			$sth->bindValue($iterator, $val);
+			$iterator++;
+		}
+		
+		// Execute
+		if($sth->execute())
+			return $ORM ? $sth->fetchAll(PDO::FETCH_OBJ) : $sth->fetchAll(PDO::FETCH_ASSOC);
 		else
 			return false;
 		
