@@ -64,3 +64,25 @@ Include MarkPDO.class.php on whatever page you need to use it on.
     			  );
     $dbh->delete($table, $where);
 ```
+
+5. Fetch/Fetch All
+```
+	// Like all other methods in this class, the where clause is constructed
+	// with ANDs.  See class comments for more info.
+	
+	$table  = "users";
+	$select = array("id", "name");
+	$where = array("email"=>"Mark@Dunphtastic.com");
+
+	// Get ONE result. Return object.
+	$dbh->fetch($table, $select, $where);
+
+	// Get ONE result.  Return associative array.
+	$dbh->fetch($table, $select, $where, false);
+
+	// Get all results.  Return object.
+	$dbh->fetchAll($table, $select, $where);
+
+	// Get all results. Return associative array.
+	$dbh->fetchAll($table, $select, $where);
+```
