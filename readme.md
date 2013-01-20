@@ -32,7 +32,10 @@ Include MarkPDO.class.php on whatever page you need to use it on.
 ```
     // $table is the table to update.
     // $data is a key/value array where the key is the column name. 
-    // $where is an SQL where clause to specify what to update.   
+    // $where is a key/value array where the key is the column name.
+    //         Where clause is separated by AND so the row must match ALL
+    //		   criteria in this array for it to be updated.  More flexible
+    //		   options coming eventually
     // Returns boolean true/false on success/failure
     $table = "users";
     $data = array(
