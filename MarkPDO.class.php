@@ -16,7 +16,7 @@ class MarkPDO {
 	private $dbname = "";
 	
 	// Construct new db handler
-	private function __construct($host=NULL, $dbname=NULL, $user=NULL, $pass=NULL) {
+	function __construct($host=NULL, $dbname=NULL, $user=NULL, $pass=NULL) {
 		if(!is_null($host) && !is_null($dbname) && !is_null($user) && !is_null($pass)) {
 			$this->host = $host;
 			$this->dbname = $dbname;
@@ -28,11 +28,11 @@ class MarkPDO {
 	}
 	
 	/* Accepts an array $data of values to insert into table $table
-	/* @param $table [Required] - The table to insert into
-	/* @param $data [Required] - The data to insert.  Keys should be the name of the column
+	/* @param $table (String) [Required] - The table to insert into
+	/* @param $data (Array) [Required] - The data to insert.  Keys should be the name of the column
 								 with a corresponding value.
 	/**************************************************************/
-	public function insert($table, $data) {
+	function insert($table, $data) {
 		$numParams = count($data);
 
 		// Separate keys from values
@@ -69,7 +69,40 @@ class MarkPDO {
 		
 	}
 	
-	
+		/* Accepts an array $data of values to update table $table
+	/* @param $table (String) [Required] - The table to update.
+	/* @param $data (Array) [Required] - The data to update.  Keys should be the name of the column
+								 with a corresponding value.
+	/* @param $where (String) [Required] - Specify where clause to determine which row to update.
+	/**************************************************************/
+	public function update($table, $data, $where) {
+		$save = array();
+		$v = array();
+		
+		foreach($data as $key=>$val) {
+			//$save[] = $key."='".$val."'";
+			$save[] = $key."=?";
+			$v[] = $val;
+		}
+		
+		array_unshift($v, "spacer");
+
+		$updatethis = implode(", ", $save);
+
+		$sql = "UPDATE `$table` SET $updatethis WHERE $where";
+		$sth = $this->dbh->prepare($sql);
+		
+		foreach($v as $key=>$val) {
+			if($key!=0)
+				$sth->bindValue($key, $val);
+		}
+		
+		if($sth->execute())
+			return true;
+		else
+			return false;
+		
+	}	
 }
 
 ?>
