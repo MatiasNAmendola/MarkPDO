@@ -69,7 +69,7 @@ class MarkPDO {
 		
 	}
 	
-		/* Accepts an array $data of values to update table $table
+	/* Accepts an array $data of values to update table $table
 	/* @param $table (String) [Required] - The table to update.
 	/* @param $data (Array) [Required] - The data to update.  Keys should be the name of the column
 								 with a corresponding value.
@@ -80,7 +80,6 @@ class MarkPDO {
 		$v = array();
 		
 		foreach($data as $key=>$val) {
-			//$save[] = $key."='".$val."'";
 			$save[] = $key."=?";
 			$v[] = $val;
 		}
@@ -102,7 +101,43 @@ class MarkPDO {
 		else
 			return false;
 		
-	}	
+	}
+	
+	/* Accepts an array $data of values to update table $table
+	/* @param $table (String) [Required] - The table to update.
+	/* @param $where (Array) [Required] - Specify where clause to determine which row to delete.
+										  Key should be column name. Row must match ALL criteria in 
+										  this array.
+	/**************************************************************/
+	public function delete($table, $where) {
+		$w = array();
+		$v = array();
+		
+		foreach($where as $key=>$val) {
+			$cols[] = $key;
+			$v[] = $val;
+		}
+
+		array_unshift($v, "spacer");
+		
+		$placeholder = implode("=? AND ", $cols);
+		$placeholder .= "=?";
+
+		$sql = "DELETE FROM `$table` WHERE $placeholder";
+		$sth = $this->dbh->prepare($sql);
+		
+		foreach($v as $key=>$val) {
+			if($key!=0)
+				$sth->bindValue($key, $val);
+		}
+
+		if($sth->execute())
+			return true;
+		else
+			return false;
+		
+		
+	}
 }
 
 ?>
