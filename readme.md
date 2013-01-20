@@ -25,7 +25,7 @@ Include MarkPDO.class.php on whatever page you need to use it on.
     				"email"=>"Mark@Dunphtastic.com",
     				"twitter"=>"@misterdunphy"
     			  );
-    $dbh->insert($table, $table);
+    $dbh->insert($table, $data);
 ```
 
 3. Update 
@@ -35,7 +35,7 @@ Include MarkPDO.class.php on whatever page you need to use it on.
     // $where is a key/value array where the key is the column name.
     //         Where clause is separated by AND so the row must match ALL
     //		   criteria in this array for it to be updated.  More flexible
-    //		   options coming eventually
+    //		   options coming eventually.
     // Returns boolean true/false on success/failure
     $table = "users";
     $data = array(
@@ -45,7 +45,7 @@ Include MarkPDO.class.php on whatever page you need to use it on.
     				"twitter"=>"@misterdunphy"
     			  );
     $where = array("id"=>"1234");
-    $dbh->update($table, $table, $where);
+    $dbh->update($table, $data, $where);
 ```
 
 4. Delete
@@ -55,7 +55,7 @@ Include MarkPDO.class.php on whatever page you need to use it on.
 	// $where array.  Adding a fancier delete method later to account
 	// for more flexibility.
 	//
-    // $Table is the table to delete from
+    // $table is the table to delete from
     // $where is a key/value array where the key is the column name.
     // Returns boolean true/false on success/failure
     $table = "users";
