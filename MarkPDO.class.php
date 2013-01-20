@@ -13,7 +13,7 @@ class MarkPDO {
 	private $host = "localhost";
 	private $user = "root";
 	private $pass = "";
-	private $dbname = "fly_invoice";
+	private $dbname = "";
 	
 	// Construct new db handler
 	private function __construct($host=NULL, $dbname=NULL, $user=NULL, $pass=NULL) {
