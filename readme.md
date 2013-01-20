@@ -77,42 +77,29 @@ class MarkPDO {
 	public function update($table, $data, $where) {
 		$save = array();
 		$v = array();
+		$iterator = 1;
 		
-		foreach($data as $key=>$val) {
-			$save[] = $key."=?";
-			$v[] = $val;
-		}
-		
-		array_unshift($v, "spacer");
+		// Construct set
+		$updatethis = implode("=?, ", array_keys($data))."=?";
 
-		$updatethis = implode(", ", $save);
-		
 		// Construct where clause
-		foreach($where as $key=>$val) {
-			$wc[] = $key."=?";
-			$wv[] = $val;
-		}
+		$whereholder = implode("=? AND ", array_keys($where))."=?";
 		
-		array_unshift($wv, "spacer");
-		$whereholder = implode(" AND ", $wc);
-
+		// Prepare
 		$sql = "UPDATE `$table` SET $updatethis WHERE $whereholder";
 		$sth = $this->dbh->prepare($sql);
 		
-		// Bind set values
-		foreach($v as $key=>$val) {
-			if($key!=0)
-				$sth->bindValue($key, $val);
-			
-			$num = $key;
+		// Bind update values
+		foreach($data as $val) {
+			$sth->bindValue($iterator, $val);
+			$iterator++;
 		}
-		$num++;// Increment to next placeholder
-		foreach($wv as $key=>$val) {
-			if($key!=0)
-				$sth->bindValue($num, $val);
+		// Bind where values
+		foreach($where as $val) {
+			$sth->bindValue($iterator, $val);
+			$iterator++;
 		}
 		
-//		var_dump($sth); die();
 		if($sth->execute())
 			return true;
 		else
