@@ -114,27 +114,21 @@ class MarkPDO {
 										  this array.
 	/**************************************************************/
 	public function delete($table, $where) {
-		$w = array();
-		$v = array();
+		$iterator = 1;
+		// Placeholder set up
+		$placeholder = implode("=? AND ", array_keys($where))."=?";
 		
-		foreach($where as $key=>$val) {
-			$cols[] = $key;
-			$v[] = $val;
-		}
-
-		array_unshift($v, "spacer");
-		
-		$placeholder = implode("=? AND ", $cols);
-		$placeholder .= "=?";
-
+		// Prepare
 		$sql = "DELETE FROM `$table` WHERE $placeholder";
 		$sth = $this->dbh->prepare($sql);
 		
-		foreach($v as $key=>$val) {
-			if($key!=0)
-				$sth->bindValue($key, $val);
+		// Bind values
+		foreach($where as $val) {
+			$sth->bindValue($iterator, $val);
+			$iterator++;
 		}
-
+		
+		// Execute
 		if($sth->execute())
 			return true;
 		else
