@@ -44,7 +44,7 @@ Include MarkPDO.class.php on whatever page you need to use it on.
     				"email"=>"Mark@Dunphtastic.com",
     				"twitter"=>"@misterdunphy"
     			  );
-    $where = "id='1234'";
+    $where = array("id"=>"1234");
     $dbh->update($table, $table, $where);
 ```
 
