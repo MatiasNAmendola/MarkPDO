@@ -10,6 +10,7 @@
 class MarkPDO {
 	
 	private $dbh;
+	private $debug = false; // Set this to true to see PDO errors.
 	private $host = "localhost";
 	private $user = "root";
 	private $pass = "";
@@ -26,7 +27,8 @@ class MarkPDO {
 		
 		$this->dbh = new PDO("mysql:host=".$this->host.";dbname=".$this->dbname, $this->user, $this->pass);
 		
-		$this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		if($this->debug)
+			$this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	}
 	
 	/* Accepts an array $data of values to insert into table $table
