@@ -93,8 +93,11 @@ Include MarkPDO.class.php on whatever page you need to use it on.
 	$dbh->fetchSome($table, $select, $where, 2, false);
 
 
-6. Custom Query
+7. Custom Query
 ```
+
    $stmt = "ENTER SQL QUERY HERE";
    $dbh->cquery($stmt);
+
+
 ```
