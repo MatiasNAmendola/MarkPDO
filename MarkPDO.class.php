@@ -1,6 +1,6 @@
 <?php
 /*	Super easy/basic database interactions on MySQL using PHP Data Objects
- *	Created by @misterdunphy
+ *	Created by @dunphtastic
  *	http://github.com/markdunphy
  *	Use this however you want for whatever you want.  Modify it, but do not
  *  take credit as your own because that's just not cool, man.
@@ -31,22 +31,24 @@ class MarkPDO {
 			$this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	}
 	
+	// Custom Query
+	public function cquery($sql) {
+		return $this->dbh->query($sql);
+	}
+	
 	/* Accepts an array $data of values to insert into table $table
 	/* @param $table (String) [Required] - The table to insert into
 	/* @param $data (Array) [Required] - The data to insert.  Keys should be the name of the column
-								 with a corresponding value.
+								 		 with a corresponding value.
 	/**************************************************************/
-	function insert($table, $data) {
+	public function insert($table, $data) {
 		$numParams = count($data);
 		$placeholder = "";
 		$iterator = 1;
 		
 		// Set placeholder
 		for($i=1;$i<=$numParams;$i++) {
-			if($i!=$numParams)
-				$placeholder .= "?, ";
-			else
-				$placeholder .= "?";
+			$placeholder .= ($i != $numParams) ? "?, " : "?";
 		}
 			
 		// Get columns for query
@@ -61,12 +63,8 @@ class MarkPDO {
 			$sth->bindValue($iterator, $value);
 			$iterator++;
 		}
-		
-		
-		if($sth->execute())
-			return true;
-		else
-			return false;
+
+		return $sth->execute();
 		
 	}
 	
@@ -79,8 +77,6 @@ class MarkPDO {
 										  this array.
 	/**************************************************************/
 	public function update($table, $data, $where) {
-		$save = array();
-		$v = array();
 		$iterator = 1;
 		
 		// Construct set
@@ -103,11 +99,8 @@ class MarkPDO {
 			$sth->bindValue($iterator, $val);
 			$iterator++;
 		}
-		
-		if($sth->execute())
-			return true;
-		else
-			return false;
+
+		return $sth->execute();
 		
 	}
 	
@@ -131,13 +124,8 @@ class MarkPDO {
 			$sth->bindValue($iterator, $val);
 			$iterator++;
 		}
-		
-		// Execute
-		if($sth->execute())
-			return true;
-		else
-			return false;
-		
+
+		return $sth->execute();
 		
 	}
 	
@@ -171,9 +159,8 @@ class MarkPDO {
 		// Execute
 		if($sth->execute())
 			return $ORM ? $sth->fetch(PDO::FETCH_OBJ) : $sth->fetch(PDO::FETCH_ASSOC);
-		else
-			return false;
 		
+		return false;
 		
 	}
 	
@@ -210,9 +197,8 @@ class MarkPDO {
 		// Execute
 		if($sth->execute())
 			return $ORM ? $sth->fetchAll(PDO::FETCH_OBJ) : $sth->fetchAll(PDO::FETCH_ASSOC);
-		else
-			return false;
 		
+		return false;
 		
 	}
 	
@@ -247,9 +233,8 @@ class MarkPDO {
 		// Execute
 		if($sth->execute())
 			return $ORM ? $sth->fetchAll(PDO::FETCH_OBJ) : $sth->fetchAll(PDO::FETCH_ASSOC);
-		else
-			return false;
 		
+		return false;
 		
 	}
 }
