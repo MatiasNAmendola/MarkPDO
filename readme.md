@@ -92,13 +92,9 @@ Include MarkPDO.class.php on whatever page you need to use it on.
 	// Get 2 results. Return associative array.
 	$dbh->fetchSome($table, $select, $where, 2, false);
 
-```
-
-
-```
-
 
 6. Custom Query
 ```
    $stmt = "ENTER SQL QUERY HERE";
    $dbh->cquery($stmt);
+```
